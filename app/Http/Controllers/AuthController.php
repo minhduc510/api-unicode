@@ -3,18 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Middleware\JwtCustomResponse;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh']]);
-    }
-
     public function login()
     {
         $credentials = request(['email', 'password']);
@@ -33,6 +30,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'avatar_path' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'password' => 'required|string|min:6',
             'password_confirmation' => 'required|string|min:6|same:password',
         ]);
@@ -45,9 +43,18 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $avatarPath = null;
+        if ($request->hasFile('avatar_path')) {
+            $fileInfo = FileHelper::uploadFile($request->avatar_path, 'users/avatar');
+            if (!is_null($fileInfo)) {
+                $avatarPath = $fileInfo['path'];
+            }
+        }
+
         $credentials = [
             'name' => $request->name,
             'email' => $request->email,
+            'avatar_path' => $avatarPath,
             'password' => bcrypt($request->password),
         ];
         $user = User::create($credentials);
