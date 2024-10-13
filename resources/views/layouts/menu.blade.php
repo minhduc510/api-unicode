@@ -9,6 +9,10 @@
                 aria-controls="v-pills-auth" aria-selected="false">Auth</a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" id="v-pills-user-tab" data-toggle="pill" href="#v-pills-user" role="tab"
+                aria-controls="v-pills-user" aria-selected="false">User</a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" id="v-pills-post-tab" data-toggle="pill" href="#v-pills-post" role="tab"
                 aria-controls="v-pills-post" aria-selected="false">Post</a>
         </li>

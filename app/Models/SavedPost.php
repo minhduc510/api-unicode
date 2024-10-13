@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PostFavorite extends Model
+class SavedPost extends Model
 {
     use HasFactory;
 
@@ -20,6 +22,4 @@ class PostFavorite extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    
 }

@@ -61,6 +61,12 @@ class PostRequest extends FormRequest
                     }
                 },
             ];
+
+            $data['keep_images'] = 'array';
+            $data['keep_images.*'] = 'string';
+
+            $data['keep_videos'] = 'array';
+            $data['keep_videos.*'] = 'string';
         }
 
         return $data;

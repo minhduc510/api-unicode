@@ -74,10 +74,59 @@ class AuthController extends Controller
     public function me()
     {
         try {
-            return response()->json(auth()->user());
+            $user = auth()->user();
+            $data = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_path' => env('APP_URL') . $user->avatar_path,
+            ];
+            return response()->json(["status" => "success", "data" => $data], 200);
         } catch (JWTException $exception) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
+    }
+
+    public function updateMe(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'email' => 'string|email|max:255|unique:users',
+            'avatar_path' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = auth()->user();
+        $data = [];
+        $avatarPath = $user->avatar_path;
+        if ($request->hasFile('avatar_path')) {
+            if ($user->avatar_path) {
+                FileHelper::deleteFile($user->avatar_path);
+            }
+            $fileInfo = FileHelper::uploadFile($request->avatar_path, 'users/avatar');
+            if (!is_null($fileInfo)) {
+                $data['avatar_path'] = $fileInfo['path'];
+            }
+        }
+
+        if ($request->has('name')) {
+            $data['name'] = $request->name;
+        }
+
+        if ($request->has('email')) {
+            $data['email'] = $request->email;
+        }
+
+        $user->update($data);
+
+        return response()->json(['status' => 'success', 'message' => 'User updated successfully'], 200);
     }
 
     public function refresh(Request $request)

@@ -54,4 +54,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function favoritePosts()
+    {
+        return $this->belongsToMany(Post::class, 'post_favorites', 'user_id', 'post_id');
+    }
 }

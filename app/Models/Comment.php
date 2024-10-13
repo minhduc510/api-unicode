@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\FileHelper;
+use App\Models\CommentFavorite;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,6 +27,16 @@ class Comment extends Model
     public function videos()
     {
         return $this->hasMany(CommentVideo::class);
+    }
+
+    public function recursiveChildren()
+    {
+        return $this->children()->with(['recursiveChildren', 'images', 'videos'])->withCount('favorites');
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(CommentFavorite::class);
     }
 
     protected static function boot()

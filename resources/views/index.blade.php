@@ -46,6 +46,8 @@
 
             @include('pages.auth')
 
+            @include('pages.user')
+
             @include('pages.post')
 
             @include('pages.comment')
